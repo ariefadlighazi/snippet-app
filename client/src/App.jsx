@@ -17,7 +17,7 @@ function App() {
 
   const getSnippets = async () => {
     try {
-      const response = await fetch("http://localhost:3000/snippets");
+      const response = await fetch("https://snippet-api.vercel.app/snippets");
       const jsonData = await response.json();
       jsonData.sort((a, b) => b.id - a.id);
       setSnippets(jsonData);
@@ -35,7 +35,7 @@ function App() {
 
   const deleteSnippet = async (id) => {
     try {
-      await fetch(`http://localhost:3000/snippets/${id}`, {
+      await fetch(`https://snippet-api.vercel.app/snippets/${id}`, {
         method: "DELETE"
       });
 
@@ -57,7 +57,7 @@ function App() {
     try {
       const body = { title, code, language };
       if (editID) {
-        await fetch(`http://localhost:3000/snippets/${editID}`, {
+        await fetch(`https://snippet-api.vercel.app/snippets/${editID}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body)
@@ -65,7 +65,7 @@ function App() {
 
         setEditID(null);
       } else {
-        await fetch("http://localhost:3000/snippets", {
+        await fetch("https://snippet-api.vercel.app/snippets", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body)
