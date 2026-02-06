@@ -1,0 +1,8 @@
+# Dependencies
+node_modules/
+
+# Secrets (NEVER PUSH THESE)
+.env
+
+# Mac System Files
+.DS_Store
