@@ -39,7 +39,7 @@ function App() {
 
   const deleteSnippet = async (id) => {
     try {
-      await fetch(`https://snippet-api.vercel.app/snippets/${id}`, {
+      const response = await fetch(`https://snippet-api.vercel.app/snippets/${id}`, {
         method: "DELETE",
         headers: {
           "x-admin-password": adminPassword
