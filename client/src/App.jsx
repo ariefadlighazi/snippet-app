@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import SnippetCard from "./components/SnippetCard.jsx";
+import toast, { Toaster } from "react-hot-toast";
 
 function App() {
   const [snippets, setSnippets] = useState([]);
@@ -10,6 +11,9 @@ function App() {
   const [editID, setEditID] = useState(null);
 
   const [searchTerm, setSearchTerm] = useState("");
+
+  const [adminPassword, setAdminPassword] = useState("");
+  
 
   useEffect(() => {
     getSnippets();
@@ -36,12 +40,18 @@ function App() {
   const deleteSnippet = async (id) => {
     try {
       await fetch(`https://snippet-api.vercel.app/snippets/${id}`, {
-        method: "DELETE"
+        method: "DELETE",
+        headers: {
+          "x-admin-password": adminPassword
+        }
       });
-
+      toast("Snippet deleted successfully!", {
+        icon: '🗑️',
+      });
       setSnippets(snippets.filter(snippet => snippet.id !== id));
     } catch (err) {
       console.error(err.message);
+      toast.error("Something went wrong!");
     }
   }
 
@@ -62,7 +72,7 @@ function App() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body)
         });
-
+        toast.success("Snippet updated successfully!");
         setEditID(null);
       } else {
         await fetch("https://snippet-api.vercel.app/snippets", {
@@ -70,6 +80,7 @@ function App() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body)
         });
+        toast.success("Snippet added successfully!");
       }
 
       setTitle("");
@@ -78,12 +89,17 @@ function App() {
 
       getSnippets();
     } catch (err) {
-      console.error(err.message)
+      console.error(err.message);
+      toast.error("Something went wrong!");
     }
   }
 
   return (
     <div className="min-h-screen bg-slate-950 text-white mx-auto p-8 relative overflow-hidden">
+      <Toaster position="top-right" toastOptions={{
+        background: '#333',
+        color: '#fff'
+      }} />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-blue-500/30 rounded-full blur-[120px] pointer-events-none"></div>
       <div className="max-w-5xl mx-auto bg-slate-800 p-6 rounded-lg shadow-lg text-white">
         <h1 className="text-4xl font-bold mb-6">Code <span className="text-blue-400">Snippets</span></h1>
@@ -113,6 +129,15 @@ function App() {
 
           <button className={`${editID ? "bg-yellow-500 hover:bg-yellow-600" : "bg-blue-500 hover:bg-blue-600"} text-white px-4 py-2 rounded-md`}>{editID ? "Update Snippet" : "Add Snippet"}</button>
         </form>
+        <div className="mb-4 flex justify-end">
+          <input
+            type="password"
+            placeholder="Admin Password"
+            value={adminPassword}
+            onChange={(e) => setAdminPassword(e.target.value)}
+            className="border border-gray-500 px-4 py-2 rounded-md w-1/3 bg-gray-400 text-black"
+          />
+        </div>
         <div className="mb-4 justify-around items-center">
           <input
             type="text"

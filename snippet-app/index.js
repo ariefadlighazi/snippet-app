@@ -2,6 +2,16 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const pool = require('./db');
+const authenticate = (req, res, next) => {
+    const providedPassword = req.headers['x-admin-password'];
+    const storedPassword = process.env.ADMIN_PASSWORD;
+
+    if (providedPassword == storedPassword) {
+        next();
+    } else {
+        res.status(403).json({ error: 'Fordbidden' });
+    }
+}
 
 app.use(cors());
 app.use(express.json());
@@ -10,7 +20,7 @@ app.get('/', (req, res) => {
     res.send('Hello, World!');
 });
 
-app.post('/snippets', async (req, res) => {
+app.post('/snippets', authenticate, async (req, res) => {
     try {
         const { title, code, language } = req.body;
         const result = await pool.query(
@@ -34,7 +44,7 @@ app.get('/snippets', async (req, res) => {
     }
 });
 
-app.put('/snippets/:id', async (req, res) => {
+app.put('/snippets/:id', authenticate, async (req, res) => {
     try {
         const { id } = req.params;
         const { title, code, language } = req.body;
@@ -50,7 +60,7 @@ app.put('/snippets/:id', async (req, res) => {
     }
 });
 
-app.delete('/snippets/:id', async (req, res) => {
+app.delete('/snippets/:id', authenticate,async (req, res) => {
     try {
         const { id } = req.params;
         await pool.query('DELETE FROM snippets WHERE id = $1', [id]);

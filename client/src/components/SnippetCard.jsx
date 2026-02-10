@@ -1,4 +1,11 @@
 import { useState, useEffect } from 'react';
+import { Light as SyntaxHighlighter } from 'react-syntax-highlighter';
+import js from 'react-syntax-highlighter/dist/esm/languages/hljs/javascript';
+import css from 'react-syntax-highlighter/dist/esm/languages/hljs/css';
+import { atomOneDark } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+
+SyntaxHighlighter.registerLanguage('javascript', js);
+SyntaxHighlighter.registerLanguage('css', css);
 
 function SnippetCard({ snippet, onEdit, onDelete }) {
     const [isCopied, setIsCopied] = useState(false);
@@ -20,7 +27,22 @@ function SnippetCard({ snippet, onEdit, onDelete }) {
                 <span className="bg-gray-200 text-black px-2 py-1 rounded text-xs">{snippet.language}</span>
             </div>
             <div className="relative mb-4">
-                <pre className="bg-black p-4 rounded-lg overflow-x-auto max-h-48 text-green-500"><code>{snippet.code}</code></pre>
+                <div className="flex-grow bg-[#282c34]">
+                    <SyntaxHighlighter
+                        language={snippet.language.toLowerCase()}
+                        style={atomOneDark}
+                        customStyle={{
+                            padding: "20px",
+                            backgroundColor: "transparent",
+                            fontSize: "0.875rem",
+                            height: "100%",
+                        }}
+                        wrapLongLines={true}
+                    >
+                        {snippet.code}
+                    </SyntaxHighlighter>
+                </div>
+                {/* <pre className="bg-black p-4 rounded-lg overflow-x-auto max-h-48 text-green-500"><code>{snippet.code}</code></pre> */}
                 <button
                     onClick={handleCopy}
                     className={`absolute top-2 right-2 ${isCopied ? 'bg-green-500 hover:bg-green-600' : 'bg-blue-500 hover:bg-blue-600'} text-white px-3 py-1 rounded-md text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
