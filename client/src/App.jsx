@@ -45,10 +45,18 @@ function App() {
           "x-admin-password": adminPassword
         }
       });
-      toast("Snippet deleted successfully!", {
+      if (response.status === 403 || response.status === 401) {
+        toast.error("Unauthorized: Incorrect admin password!");
+        return;
+      }
+      if (response.ok) {
+        setSnippets(snippets.filter(snippet => snippet.id !== id));
+        toast("Snippet deleted successfully!", {
         icon: '🗑️',
       });
-      setSnippets(snippets.filter(snippet => snippet.id !== id));
+      } else {
+        toast.error("failed to delete snippet!");
+      }
     } catch (err) {
       console.error(err.message);
       toast.error("Something went wrong!");
